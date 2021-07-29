@@ -1,11 +1,12 @@
 from threading import current_thread
 from algorithms.astar import a_star
+from components.buttons import Button
 import pygame
 import math
 
-
+pygame.init()
 WIDTH = 800
-WIN = pygame.display.set_mode((WIDTH, WIDTH))
+WIN = pygame.display.set_mode((WIDTH + 200, WIDTH + 130))
 pygame.display.set_caption("Path Finding Algorithms")
 
 RED = (255, 0, 0)
@@ -18,6 +19,12 @@ PURPLE = (128, 0, 128)
 ORANGE = (255, 165 ,0)
 GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
+
+barrierButton = Button((209, 194, 255), 10, 810, 150, 100, 'Walls')
+startButton = Button(ORANGE, 170, 810, 150, 100, 'Start Position')
+endButton = Button(TURQUOISE, 330, 810, 150, 100, 'End Position')
+beginButton = Button(GREEN, 490, 810, 150, 100, 'Begin Pathfinding')
+clearButton = Button(YELLOW, 650, 810, 150, 100, 'Clear Grid')
 
 class Node:
     def __init__(self, row, col, width, total_rows):
@@ -93,9 +100,12 @@ def make_grid(rows, width):
     grid = []
     gap = width // rows
     for i in range(rows):
+        
         grid.append([])
         for j in range(rows):
             node = Node(i, j, gap, rows)
+            if i == 0 or i == rows-1 or j == 0 or j == rows-1:
+                node.make_barrier()
             grid[i].append(node)
     return grid
 
@@ -113,6 +123,14 @@ def draw(win, grid, rows, width):
         for node in row:
             node.draw(win)
     draw_grid(win, rows, width)
+
+    barrierButton.draw(win, GREY)
+    startButton.draw(win, GREY)
+    endButton.draw(win, GREY)
+    beginButton.draw(win, GREY)
+    clearButton.draw(win, GREY)
+
+    startButton
     pygame.display.update()
 
 def get_clicked_pos(pos, rows, width):
@@ -123,6 +141,15 @@ def get_clicked_pos(pos, rows, width):
     col = x // gap 
 
     return row, col
+
+def disable_buttons(button: Button):
+    state = button.active
+    barrierButton.active = False
+    startButton.active = False
+    endButton.active = False
+    beginButton.active = False
+    clearButton.active = False
+    button.active = True if not state else False
     
 def main(win, width):
     ROWS = 50
@@ -134,22 +161,50 @@ def main(win, width):
     run = True
     while run:
         draw(win, grid, ROWS, width)
+
+        if beginButton.active and start and end:
+            for row in grid:
+                for node in row:
+                    node.update_neighbors(grid)
+            a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
+            beginButton.active = False
+        if clearButton.active:
+            start = None
+            end = None
+            grid = make_grid(ROWS, width)
+            clearButton.active = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
             if pygame.mouse.get_pressed()[0]: # LEFT
                 pos = pygame.mouse.get_pos()
-                row, col = get_clicked_pos(pos, ROWS, width)
-                node = grid[row][col]
-                if not start and node != end:
-                    start = node
-                    start.make_start()
-                elif not end and node != start:
-                    end = node
-                    end.make_end()
-                elif node != end and node != start:
-                    node.make_barrier()
+                if pos[0] <= 800 and pos[1] <= 800:
+                    row, col = get_clicked_pos(pos, ROWS, width)
+                    node = grid[row][col]
+                    if barrierButton.active:
+                        node.make_barrier()
+                    if startButton.active:
+                        start = node
+                        start.make_start()
+                        startButton.active = False
+                    if endButton.active:
+                        end = node
+                        end.make_end()
+                        endButton.active = False
+
+                elif barrierButton.isOver(pos):
+                    disable_buttons(barrierButton)
+                elif startButton.isOver(pos):
+                    disable_buttons(startButton)
+                elif endButton.isOver(pos):
+                    disable_buttons(endButton)
+                elif beginButton.isOver(pos):
+                    disable_buttons(beginButton)
+                elif clearButton.isOver(pos):
+                    disable_buttons(clearButton)
+                
 
 
             elif pygame.mouse.get_pressed()[2]: # RIGHT
@@ -161,16 +216,6 @@ def main(win, width):
                     start = None
                 elif node == end:
                     end = None
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and start and end:
-                    for row in grid:
-                        for node in row:
-                            node.update_neighbors(grid)
-                    a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
-                if event.key == pygame.K_c:
-                    start = None
-                    end = None
-                    grid = make_grid(ROWS, width)
     pygame.quit()
 
 main(WIN, WIDTH)
