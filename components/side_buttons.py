@@ -1,6 +1,6 @@
 import pygame
 
-class Button():
+class SideButton():
     def __init__(self, color, x, y, width, height, text='', active = False):
         self.color = color
         self.x = x
@@ -19,7 +19,7 @@ class Button():
         if not self.active:
             pygame.draw.rect(win, self.color, (self.x,self.y,self.width,self.height),0)
         else:
-            pygame.draw.rect(win, (255, 133, 153), (self.x,self.y,self.width,self.height),0)
+            pygame.draw.rect(win, (136, 199, 113), (self.x,self.y,self.width,self.height),0)
             
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 22)

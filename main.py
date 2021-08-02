@@ -1,6 +1,7 @@
 from threading import current_thread
 from algorithms.astar import a_star
 from components.buttons import Button
+from components.side_buttons import SideButton
 import pygame
 import math
 
@@ -19,12 +20,24 @@ PURPLE = (128, 0, 128)
 ORANGE = (255, 165 ,0)
 GREY = (128, 128, 128)
 TURQUOISE = (64, 224, 208)
+SLATEBLUE = (106, 90, 205)
+SPRINGGREEN = (0, 250, 154)
+CRIMSON = (220, 20, 60)
+KHAKI = (240, 230, 140)
+ORANGERED = (255, 69, 0) 
+CORAL = (255, 127, 80)
 
+#(self, color, x, y, width, height, text='')
 barrierButton = Button((209, 194, 255), 10, 810, 150, 100, 'Walls')
 startButton = Button(ORANGE, 170, 810, 150, 100, 'Start Position')
 endButton = Button(TURQUOISE, 330, 810, 150, 100, 'End Position')
 beginButton = Button(GREEN, 490, 810, 150, 100, 'Begin Pathfinding')
 clearButton = Button(YELLOW, 650, 810, 150, 100, 'Clear Grid')
+#Side buttons
+aStarButton = SideButton(WHITE, 801, 123, 198, 55, 'A* algorithm', True)
+dijkstraButton = SideButton(WHITE, 801, 178, 198, 55, 'Dijkstra algorithm')
+bellmanFordButton = SideButton(WHITE, 801, 233, 198, 55, 'Bellman Ford algorithm')
+
 
 class Node:
     def __init__(self, row, col, width, total_rows):
@@ -116,6 +129,14 @@ def draw_grid(win, rows, width):
         for j in range(rows):
             pygame.draw.line(win, GREY, (j * gap, 0), (j * gap, width))
 
+def write_text(win):
+    font = pygame.font.SysFont('comicsans', 22)
+    pygame.font.init()
+    textAlgorithms = font.render('Algorithms', 1, BLACK)
+    win.blit(textAlgorithms, (855, 70))  
+  
+
+
 def draw(win, grid, rows, width):
     win.fill(WHITE)
     
@@ -129,8 +150,12 @@ def draw(win, grid, rows, width):
     endButton.draw(win, GREY)
     beginButton.draw(win, GREY)
     clearButton.draw(win, GREY)
+    aStarButton.draw(win, GREY)
+    dijkstraButton.draw(win, GREY)
+    bellmanFordButton.draw(win, GREY)
 
-    startButton
+    write_text(win)
+
     pygame.display.update()
 
 def get_clicked_pos(pos, rows, width):
@@ -150,6 +175,12 @@ def disable_buttons(button: Button):
     beginButton.active = False
     clearButton.active = False
     button.active = True if not state else False
+
+def disable_algorithms(button: Button):
+    aStarButton.active = False
+    dijkstraButton.active = False
+    bellmanFordButton.active = False
+    button.active = True
     
 def main(win, width):
     ROWS = 50
@@ -157,22 +188,30 @@ def main(win, width):
 
     start = None
     end = None
-
     run = True
+    # beginActivated = False 
+
     while run:
         draw(win, grid, ROWS, width)
-
         if beginButton.active and start and end:
             for row in grid:
                 for node in row:
                     node.update_neighbors(grid)
-            a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
+            if (aStarButton.active):
+                a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
+            elif (dijkstraButton.active):
+                pass
+            elif (bellmanFordButton):
+                pass
             beginButton.active = False
+            
+            # beginActivated = True
         if clearButton.active:
             start = None
             end = None
             grid = make_grid(ROWS, width)
             clearButton.active = False
+            # beginActivated = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -183,17 +222,18 @@ def main(win, width):
                 if pos[0] <= 800 and pos[1] <= 800:
                     row, col = get_clicked_pos(pos, ROWS, width)
                     node = grid[row][col]
-                    if barrierButton.active:
-                        node.make_barrier()
-                    if startButton.active:
+                    if startButton.active and not start and node != end:
                         start = node
                         start.make_start()
                         startButton.active = False
-                    if endButton.active:
+                    if endButton.active and not end and node != start:
                         end = node
                         end.make_end()
                         endButton.active = False
+                    if barrierButton.active and node != end and node != start:
+                        node.make_barrier()
 
+                #Bottoms buttons click
                 elif barrierButton.isOver(pos):
                     disable_buttons(barrierButton)
                 elif startButton.isOver(pos):
@@ -204,18 +244,29 @@ def main(win, width):
                     disable_buttons(beginButton)
                 elif clearButton.isOver(pos):
                     disable_buttons(clearButton)
+
+                #Side Buttons click
+                elif aStarButton.isOver(pos):
+                    disable_algorithms(aStarButton)
+                elif dijkstraButton.isOver(pos):
+                    disable_algorithms(dijkstraButton)
+                elif bellmanFordButton.isOver(pos):
+                    disable_algorithms(bellmanFordButton)
                 
 
 
+            # elif pygame.mouse.get_pressed()[2] and not beginActivated: # RIGHT
             elif pygame.mouse.get_pressed()[2]: # RIGHT
                 pos = pygame.mouse.get_pos()
-                row, col = get_clicked_pos(pos, ROWS, width)
-                node = grid[row][col]
-                node.reset()
-                if node == start:
-                    start = None
-                elif node == end:
-                    end = None
+                if pos[0] <= 800 and pos[1] <= 800:
+                    row, col = get_clicked_pos(pos, ROWS, width)
+                    node = grid[row][col]
+                    node.reset()
+                    if node == start:
+                        start = None
+                    elif node == end:
+                        end = None
+
     pygame.quit()
 
 main(WIN, WIDTH)
