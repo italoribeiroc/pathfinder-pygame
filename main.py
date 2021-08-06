@@ -8,7 +8,7 @@ import math
 pygame.init()
 SCREEN_HEIGHT, SCREEN_WIDTH = pygame.display.Info().current_h, pygame.display.Info().current_w
 WIDTH = (800*SCREEN_HEIGHT)//1080
-WIN = pygame.display.set_mode((WIDTH + (200*SCREEN_WIDTH//1920), WIDTH + (130*SCREEN_HEIGHT//1080)), flags = pygame.SCALED)
+WIN = pygame.display.set_mode((WIDTH + (200*SCREEN_WIDTH//1920), WIDTH + (130*SCREEN_HEIGHT//1080)))
 pygame.display.set_caption("Path Finding Algorithms")
 
 RED = (255, 0, 0)
