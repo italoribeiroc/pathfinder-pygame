@@ -6,8 +6,9 @@ import pygame
 import math
 
 pygame.init()
-WIDTH = 800
-WIN = pygame.display.set_mode((WIDTH + 200, WIDTH + 130))
+SCREEN_HEIGHT, SCREEN_WIDTH = pygame.display.Info().current_h, pygame.display.Info().current_w
+WIDTH = (800*SCREEN_HEIGHT)//1080
+WIN = pygame.display.set_mode((WIDTH + (200*SCREEN_WIDTH//1920), WIDTH + (130*SCREEN_HEIGHT//1080)), flags = pygame.SCALED)
 pygame.display.set_caption("Path Finding Algorithms")
 
 RED = (255, 0, 0)
@@ -28,15 +29,15 @@ ORANGERED = (255, 69, 0)
 CORAL = (255, 127, 80)
 
 #(self, color, x, y, width, height, text='')
-barrierButton = Button((209, 194, 255), 10, 810, 150, 100, 'Walls')
-startButton = Button(ORANGE, 170, 810, 150, 100, 'Start Position')
-endButton = Button(TURQUOISE, 330, 810, 150, 100, 'End Position')
-beginButton = Button(GREEN, 490, 810, 150, 100, 'Begin Pathfinding')
-clearButton = Button(YELLOW, 650, 810, 150, 100, 'Clear Grid')
+barrierButton = Button((209, 194, 255), 10, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'Walls')
+startButton = Button(ORANGE, 170, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'Start Position')
+endButton = Button(TURQUOISE, 330, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'End Position')
+beginButton = Button(GREEN, 490, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'Begin Pathfinding')
+clearButton = Button(YELLOW, 650, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'Clear Grid')
 #Side buttons
-aStarButton = SideButton(WHITE, 801, 123, 198, 55, 'A* algorithm', True)
-dijkstraButton = SideButton(WHITE, 801, 178, 198, 55, 'Dijkstra algorithm')
-bellmanFordButton = SideButton(WHITE, 801, 233, 198, 55, 'Bellman Ford algorithm')
+aStarButton = SideButton(WHITE, 801, 123, 198*SCREEN_WIDTH//1920, 55*SCREEN_HEIGHT//1080, 'A* algorithm', True)
+dijkstraButton = SideButton(WHITE, 801, 178, 198*SCREEN_WIDTH//1920, 55*SCREEN_HEIGHT//1080, 'Dijkstra algorithm')
+bellmanFordButton = SideButton(WHITE, 801, 233, 198*SCREEN_WIDTH//1920, 55*SCREEN_HEIGHT//1080, 'Bellman Ford algorithm')
 
 
 class Node:
