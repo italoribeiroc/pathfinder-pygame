@@ -1,43 +1,46 @@
 from threading import current_thread
 from algorithms.astar import a_star
+from assets.colors import *
 from components.buttons import Button
 from components.side_buttons import SideButton
 import pygame
 import math
 
 pygame.init()
-SCREEN_HEIGHT, SCREEN_WIDTH = pygame.display.Info().current_h, pygame.display.Info().current_w
+SCREEN_HEIGHT = pygame.display.Info().current_h
+DISPLAYS = [(1024,576),(1152,648),(1280,720),(1600,900),(1920,1080),(2560,1440)] 
+i = 0
+while DISPLAYS[i][1] < SCREEN_HEIGHT:
+    i+=1
+SCREEN_WIDTH, SCREEN_HEIGHT = DISPLAYS[i]
 WIDTH = (800*SCREEN_HEIGHT)//1080
-WIN = pygame.display.set_mode((WIDTH + (200*SCREEN_WIDTH//1920), WIDTH + (130*SCREEN_HEIGHT//1080)))
+RIGHT_WIN = (130*SCREEN_HEIGHT)//1080
+BOTTOM_WIN = (200*SCREEN_WIDTH)//1920
+WIN = pygame.display.set_mode((WIDTH + BOTTOM_WIN, WIDTH + RIGHT_WIN), flags = pygame.SCALED)
 pygame.display.set_caption("Path Finding Algorithms")
 
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-PURPLE = (128, 0, 128)
-ORANGE = (255, 165 ,0)
-GREY = (128, 128, 128)
-TURQUOISE = (64, 224, 208)
-SLATEBLUE = (106, 90, 205)
-SPRINGGREEN = (0, 250, 154)
-CRIMSON = (220, 20, 60)
-KHAKI = (240, 230, 140)
-ORANGERED = (255, 69, 0) 
-CORAL = (255, 127, 80)
-
+BUTTON_WIDTH = (150*SCREEN_WIDTH)//1920
+BUTTON_HEIGHT = (100*SCREEN_HEIGHT)//1080
+BUTTON_POS_X =  (10*SCREEN_WIDTH)//1920
+BUTTON_POS_Y = (810*SCREEN_HEIGHT)//1080
+BUTTON_SPACE = (160*SCREEN_WIDTH)//1920
+print(SCREEN_WIDTH)
 #(self, color, x, y, width, height, text='')
-barrierButton = Button((209, 194, 255), 10, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'Walls')
-startButton = Button(ORANGE, 170, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'Start Position')
-endButton = Button(TURQUOISE, 330, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'End Position')
-beginButton = Button(GREEN, 490, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'Begin Pathfinding')
-clearButton = Button(YELLOW, 650, 810, 150*SCREEN_WIDTH//1920, 100*SCREEN_HEIGHT//1080, 'Clear Grid')
+barrierButton = Button((209, 194, 255), BUTTON_POS_X, BUTTON_POS_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 'Walls')
+startButton = Button(ORANGE, BUTTON_POS_X+BUTTON_SPACE, BUTTON_POS_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 'Start Position')
+endButton = Button(TURQUOISE, BUTTON_POS_X+BUTTON_SPACE*2, BUTTON_POS_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 'End Position')
+beginButton = Button(GREEN, BUTTON_POS_X+BUTTON_SPACE*3, BUTTON_POS_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 'Begin Pathfinding')
+clearButton = Button(YELLOW, BUTTON_POS_X+BUTTON_SPACE*4, BUTTON_POS_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 'Clear Grid')
 #Side buttons
-aStarButton = SideButton(WHITE, 801, 123, 198*SCREEN_WIDTH//1920, 55*SCREEN_HEIGHT//1080, 'A* algorithm', True)
-dijkstraButton = SideButton(WHITE, 801, 178, 198*SCREEN_WIDTH//1920, 55*SCREEN_HEIGHT//1080, 'Dijkstra algorithm')
-bellmanFordButton = SideButton(WHITE, 801, 233, 198*SCREEN_WIDTH//1920, 55*SCREEN_HEIGHT//1080, 'Bellman Ford algorithm')
+
+SBUTTON_WIDTH = (198*SCREEN_WIDTH)//1920
+SBUTTON_HEIGHT = (55*SCREEN_HEIGHT)//1080
+SBUTTON_POS_X =  (801*SCREEN_WIDTH)//1920
+SBUTTON_POS_Y = (100*SCREEN_HEIGHT)//1080
+SBUTTON_SPACE = (55*SCREEN_WIDTH)//1920
+aStarButton = SideButton(WHITE, SBUTTON_POS_X, SBUTTON_POS_Y, SBUTTON_WIDTH, SBUTTON_HEIGHT, 'A* algorithm', True)
+dijkstraButton = SideButton(WHITE, SBUTTON_POS_X, SBUTTON_POS_Y+SBUTTON_HEIGHT, SBUTTON_WIDTH, SBUTTON_HEIGHT, 'Dijkstra algorithm')
+bellmanFordButton = SideButton(WHITE, SBUTTON_POS_X, SBUTTON_POS_Y+SBUTTON_HEIGHT+SBUTTON_HEIGHT, SBUTTON_WIDTH, SBUTTON_HEIGHT, 'Bellman Ford algorithm')
 
 
 class Node:
@@ -134,7 +137,7 @@ def write_text(win):
     font = pygame.font.SysFont('comicsans', 22)
     pygame.font.init()
     textAlgorithms = font.render('Algorithms', 1, BLACK)
-    win.blit(textAlgorithms, (855, 70))  
+    win.blit(textAlgorithms, (855, 40))  
   
 
 
@@ -220,7 +223,7 @@ def main(win, width):
 
             if pygame.mouse.get_pressed()[0]: # LEFT
                 pos = pygame.mouse.get_pos()
-                if pos[0] <= 800 and pos[1] <= 800:
+                if pos[0] <= WIDTH and pos[1] <= WIDTH:
                     row, col = get_clicked_pos(pos, ROWS, width)
                     node = grid[row][col]
                     if startButton.active and not start and node != end:
@@ -259,7 +262,7 @@ def main(win, width):
             # elif pygame.mouse.get_pressed()[2] and not beginActivated: # RIGHT
             elif pygame.mouse.get_pressed()[2]: # RIGHT
                 pos = pygame.mouse.get_pos()
-                if pos[0] <= 800 and pos[1] <= 800:
+                if pos[0] <= WIDTH and pos[1] <= WIDTH:
                     row, col = get_clicked_pos(pos, ROWS, width)
                     node = grid[row][col]
                     node.reset()
