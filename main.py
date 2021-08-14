@@ -1,5 +1,6 @@
 from threading import current_thread
 from algorithms.astar import a_star
+from algorithms.Dijkstra import dijkstra
 from assets.colors import *
 from components.buttons import Button
 from components.side_buttons import SideButton
@@ -137,7 +138,7 @@ def write_text(win):
     font = pygame.font.SysFont('comicsans', 22)
     pygame.font.init()
     textAlgorithms = font.render('Algorithms', 1, BLACK)
-    win.blit(textAlgorithms, (855, 40))  
+    win.blit(textAlgorithms, ((855*SCREEN_WIDTH)//1920, (40*SCREEN_HEIGHT)//1080))  
   
 
 
@@ -204,7 +205,7 @@ def main(win, width):
             if (aStarButton.active):
                 a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
             elif (dijkstraButton.active):
-                pass
+                dijkstra(lambda: draw(win, grid, ROWS, width), grid, start, end)
             elif (bellmanFordButton):
                 pass
             beginButton.active = False
