@@ -1,6 +1,6 @@
 from threading import current_thread
 from algorithms.astar import a_star
-from algorithms.Dijkstra import dijkstra
+#from algorithms.Dijkstra import dijkstra
 from assets.colors import *
 from components.buttons import Button
 from components.side_buttons import SideButton
@@ -205,7 +205,8 @@ def main(win, width):
             if (aStarButton.active):
                 a_star(lambda: draw(win, grid, ROWS, width), grid, start, end)
             elif (dijkstraButton.active):
-                dijkstra(lambda: draw(win, grid, ROWS, width), grid, start, end)
+                pass
+                #dijkstra(lambda: draw(win, grid, ROWS, width), grid, start, end)
             elif (bellmanFordButton):
                 pass
             beginButton.active = False
